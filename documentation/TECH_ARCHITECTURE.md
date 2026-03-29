@@ -7,6 +7,19 @@
 - Build MVP quickly (link, video, audio, screen share, chat) while keeping extension points for co-browsing, recording, CRM, and AI.
 - Support browser-first customer access on mobile and desktop with minimal setup.
 
+## 1.1) POC monorepo (this repository)
+
+The current **proof-of-concept** is implemented as a monorepo:
+
+| Package | Stack | Role |
+|---------|-------|------|
+| `apps/web` | Next.js (App Router), TypeScript | Customer/agent UI: create session link, join with display name, **WebRTC** for microphone and optional camera |
+| `apps/api` | Java 17+, Spring Boot 3 | **REST** for session creation/existence; **WebSocket** for WebRTC signaling only (offer/answer/ICE) |
+
+**Important:** **WebSocket does not carry voice or video.** Browser media uses **WebRTC** (peer connections, DTLS-SRTP). The Java service relays small JSON signaling messages between peers. The POC uses a **mesh** topology (one `RTCPeerConnection` per remote peer) and public **STUN**; production would move media to an **SFU** (e.g. mediasoup) and add **TURN** as in §2.1.
+
+Session state is **in-memory** (no database) until persistence is added. See [STARTUP.md](./STARTUP.md) for how to run both apps.
+
 ## 2) Proposed System Architecture
 
 ## 2.1 High-Level Components
